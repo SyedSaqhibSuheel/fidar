@@ -1,7 +1,11 @@
 import React from "react";
+import { useLocation } from "react-router-dom";
 import { QRCodeCanvas } from "qrcode.react";
 
-function QrPage({ sessionData }) {
+function QrPage() {
+  const location = useLocation();
+  const sessionData = location.state; // get the data passed from navigate()
+
   if (!sessionData) {
     return <p>No session data found. Please login again.</p>;
   }
