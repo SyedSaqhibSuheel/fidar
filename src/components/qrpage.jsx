@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { QRCodeCanvas } from "qrcode.react";
+import logo from "../assets/banklogo.jpg";
+
 
 function QrPage() {
   const location = useLocation();
@@ -8,8 +10,8 @@ function QrPage() {
   const initialSession = location.state;
 
   const [sessionData, setSessionData] = useState(initialSession);
-  const [timeLeft, setTimeLeft] = useState(60); // countdown for QR refresh
-  const [status, setStatus] = useState("PENDING"); // session state
+  const [timeLeft, setTimeLeft] = useState(60);
+  const [status, setStatus] = useState("PENDING");
 
   // Refresh QR every 60s
   useEffect(() => {
@@ -25,15 +27,12 @@ function QrPage() {
           return;
         }
         const data = await res.json();
-
-        // Keep the original sessionId
         setSessionData((prev) => ({
           ...prev,
           ...data,
           sessionId: prev.sessionId,
         }));
-
-        setTimeLeft(60); // reset countdown
+        setTimeLeft(60);
       } catch (err) {
         console.error("Error fetching next QR:", err);
       }
@@ -42,18 +41,16 @@ function QrPage() {
     return () => clearInterval(qrInterval);
   }, [initialSession]);
 
-  // Countdown timer for QR refresh
+  // Countdown timer
   useEffect(() => {
     if (!sessionData) return;
-
     const timer = setInterval(() => {
       setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
-
     return () => clearInterval(timer);
   }, [sessionData]);
 
-  // Poll session status every 10s
+  // Poll session status
   useEffect(() => {
     if (!initialSession) return;
 
@@ -84,24 +81,29 @@ function QrPage() {
   }, [initialSession, navigate]);
 
   if (!sessionData) {
-    return <p>No session data found. Please login again.</p>;
+    return <p className="no-session">No session data found. Please login again.</p>;
   }
 
   return (
-    <div className="qr-page">
-      <h2>Scan the QR Code</h2>
-      <QRCodeCanvas value={sessionData.jwt} size={256} />
-      <p>Status: {status}</p>
-      <p>Session ID: {sessionData.sessionId}</p>
-      <p>
-        Session Expires At:{" "}
-        {new Date(sessionData.sessionExpiresAtEpochSec * 1000).toLocaleString()}
-      </p>
-      <p>
-        Current QR Expires At:{" "}
-        {new Date(sessionData.jwtExpiresAtEpochSec * 1000).toLocaleString()}
-      </p>
-      <p>⏳ Next QR refresh in: {timeLeft}s</p>
+    <div className="qr-container">
+      {/* Logo */}
+      <img src={logo} alt="Logo" className="qr-logo" />
+
+      {/* QR Code Box */}
+      <div className="qr-box">
+        <QRCodeCanvas value={sessionData.jwt} size={220} />
+        <p>SCAN ME</p>
+       
+      </div>
+       <p className="qr-timer">⏳ Refresh in <span>{timeLeft}s</span></p>
+
+      {/* Session Info */}
+      <div className="qr-info">
+        <p className={`status status-${status.toLowerCase()}`}>
+          Status: {status}
+        </p>
+
+      </div>
     </div>
   );
 }

@@ -102,3 +102,78 @@
 .login-button {
   margin-bottom: 1.5rem !important; /* override MUI default */
 }
+
+.qr-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  background: #f9fafb;
+  padding: 2rem;
+}
+
+.qr-logo {
+  width: 180px;
+  height: 180px;
+  margin-bottom: 1.5rem;
+}
+
+.qr-box {
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.qr-timer {
+  margin-top: 1rem;
+  font-size: 1rem;
+  color: #555;
+  font-weight: 500;
+}
+
+.qr-timer span {
+  font-weight: 700;
+}
+
+.qr-info {
+  margin-top: 2rem;
+  text-align: center;
+  color: #444;
+  font-size: 0.95rem;
+}
+
+.qr-info p {
+  margin: 6px 0;
+}
+
+.status {
+  font-size: 1.1rem;
+  font-weight: bold;
+  padding: 6px 14px;
+  border-radius: 12px;
+  display: inline-block;
+}
+
+.status-pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-verified {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-expired {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.no-session {
+  text-align: center;
+  margin-top: 3rem;
+  font-size: 1.1rem;
+  color: #333;
+}
