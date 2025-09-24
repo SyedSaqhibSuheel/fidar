@@ -6,6 +6,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import logo from "@/assets/banklogo.jpg";
+import { Link } from "react-router-dom"
 
 export default function DashboardHeader({ open, onOpenChange }) {
   return (
@@ -33,13 +34,17 @@ export default function DashboardHeader({ open, onOpenChange }) {
           <span className="font-extrabold text-lg tracking-wide hidden sm:block select-none">Smart Bank</span>
         </div>
 
-        <div className="ml-auto flex items-center gap-2">
-          <ModeToggle />
-          <Avatar className="h-9 w-9 ring-2 ring-blue-600">
-            <AvatarImage src="/api/placeholder/40/40" alt="Shabeer" />
-            <AvatarFallback className="bg-blue-100 text-blue-600 font-semibold">S</AvatarFallback>
-          </Avatar>
-        </div>
+           <div className="ml-auto flex items-center gap-2">
+      <ModeToggle />
+      <Link to="/profile">
+        <Avatar className="h-9 w-9 ring-2 ring-blue-600 cursor-pointer hover:ring-blue-800 transition">
+          <AvatarImage src="/api/placeholder/40/40" alt="Shabeer" />
+          <AvatarFallback className="bg-blue-100 text-blue-600 font-semibold">
+            S
+          </AvatarFallback>
+        </Avatar>
+      </Link>
+    </div>
       </div>
     </header>
   );
