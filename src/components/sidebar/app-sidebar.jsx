@@ -19,7 +19,8 @@ export default function AppSidebar({ onNavigate }) {
   return (
     <aside
       className="
-        w-60 shrink-0 border-r bg-sidebar text-sidebar-foreground
+        w-60 shrink-0 bg-sidebar text-sidebar-foreground
+        border-r-0 lg:border-r-2 lg:border-r-border/80
         lg:sticky lg:top-14 lg:h-[calc(100vh-56px)]
       "
       role="navigation"
@@ -41,4 +42,6 @@ export default function AppSidebar({ onNavigate }) {
     </aside>
   );
 }
+
+
 

@@ -23,6 +23,8 @@ import logo from "../assets/banklogo.jpg";
 import fidarLogo from "../assets/fidarlogo.jpg";
 import { toast } from "@/hooks/use-toast";
 
+import ModeToggle from "@/components/theme-provider/mode-toggle";
+
 function Login() {
   const [customerId, setCustomerId] = useState("");
   const [loading, setLoading] = useState(false);
@@ -68,21 +70,28 @@ function Login() {
   return (
     <div
       className="
+        relative
         flex items-center justify-center min-h-dvh
         bg-gradient-to-br from-background to-muted
         px-3 sm:px-4
       "
     >
+      {/* Top-right mode toggle */}
+      <div className="pointer-events-none absolute top-3 right-3 sm:top-4 sm:right-4">
+        <div className="pointer-events-auto">
+          <ModeToggle />
+        </div>
+      </div>
+
       <Card
         className="
           w-full
-          max-w-[21rem]    /* tighter on mobile */
+          max-w-[21rem]
           sm:max-w-sm
           md:max-w-md
           shadow-lg border
         "
       >
-        {/* Header */}
         <CardHeader className="flex flex-col items-center space-y-3 pt-6 sm:pt-8">
           <img
             src={logo}
@@ -92,7 +101,7 @@ function Login() {
           />
           <CardTitle
             className="
-              text-[1.25rem]    /* ~20px on mobile */
+              text-[1.25rem]
               sm:text-xl
               md:text-2xl
               font-bold tracking-tight select-none
@@ -103,9 +112,9 @@ function Login() {
           <CardDescription
             className="
               text-center
-              max-w-[28ch]      /* narrower measure to feel larger */
+              max-w-[28ch]
               sm:max-w-md
-              text-[0.95rem]    /* larger base on mobile */
+              text-[0.95rem]
               sm:text-sm
               md:text-base
               text-muted-foreground
@@ -115,7 +124,6 @@ function Login() {
           </CardDescription>
         </CardHeader>
 
-        {/* Content */}
         <CardContent className="space-y-5 px-4 sm:px-6 pt-3 pb-5">
           <div className="space-y-2">
             <Label
@@ -136,8 +144,8 @@ function Login() {
                     autoComplete="username"
                     aria-describedby="customer-id-info"
                     className="
-                      h-11              /* taller input on mobile */
-                      text-[0.98rem]    /* slightly bigger text */
+                      h-11
+                      text-[0.98rem]
                       sm:h-10
                       sm:text-sm
                       md:text-base
@@ -175,21 +183,14 @@ function Login() {
 
         <Separator className="mx-4 sm:mx-6" />
 
-        {/* Footer */}
         <CardFooter className="flex flex-col space-y-4 text-center px-4 sm:px-6 py-5">
           <p className="text-[0.9rem] sm:text-xs md:text-sm text-muted-foreground max-w-[36ch] sm:max-w-md mx-auto leading-relaxed">
             By proceeding, you agree to our{" "}
-            <a
-              href="#"
-              className="underline hover:text-primary focus:text-primary"
-            >
+            <a href="#" className="underline hover:text-primary focus:text-primary">
               Privacy Policy
             </a>{" "}
             and{" "}
-            <a
-              href="#"
-              className="underline hover:text-primary focus:text-primary"
-            >
+            <a href="#" className="underline hover:text-primary focus:text-primary">
               Terms & Conditions
             </a>
           </p>

@@ -2,19 +2,18 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { QRCodeCanvas } from "qrcode.react";
 import logo from "../assets/banklogo.jpg";
+import ModeToggle from "@/components/theme-provider/mode-toggle";
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { useToast } from "@/hooks/use-toast";
-import { Copy, HelpCircle, RefreshCcw, ShieldCheck } from "lucide-react";
+import { RefreshCcw, ShieldCheck } from "lucide-react";
 
 function QrPage() {
   const location = useLocation();
@@ -27,8 +26,8 @@ function QrPage() {
   const [status, setStatus] = useState("PENDING");
   const [error, setError] = useState("");
 
-  // Compute QR value defensively
-  const qrValue = useMemo(() => sessionData?.jwt ?? "", [sessionData]);
+  // QR value
+  const qrValue = useMemo(() => sessionData?.jwt ?? "", [sessionData]); // Absolute/fixed positioning depends on nearest positioned ancestor [web:83][web:88][web:98]
 
   // Refresh QR every 60s
   useEffect(() => {
@@ -55,7 +54,7 @@ function QrPage() {
       }
     }, 60_000);
     return () => clearInterval(qrInterval);
-  }, [initialSession]);
+  }, [initialSession]); // Card layout can contain mixed header/body content per docs [web:44]
 
   // Countdown timer
   useEffect(() => {
@@ -64,7 +63,7 @@ function QrPage() {
       setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
     return () => clearInterval(timer);
-  }, [sessionData]);
+  }, [sessionData]); // Card composition remains standard [web:44]
 
   // Poll session status
   useEffect(() => {
@@ -93,14 +92,19 @@ function QrPage() {
       }
     }, 10_000);
     return () => clearInterval(statusInterval);
-  }, [initialSession, navigate]);
+  }, [initialSession, navigate, toast]); // Business logic unchanged [web:44]
 
   // Empty state
   if (!sessionData) {
     return (
-      <main className="flex justify-center items-center min-h-screen bg-muted/30 p-6">
+      <main className="relative flex justify-center items-center min-h-screen bg-muted/30 p-6">
+        {/* Place toggle at page top-right: position relative is on main */}
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-50">
+          <ModeToggle />
+        </div>
+
         <Card className="w-full max-w-md">
-          <CardHeader>
+          <CardHeader className="text-center">
             <CardTitle>No session found</CardTitle>
             <CardDescription>Please start a new login session.</CardDescription>
           </CardHeader>
@@ -112,79 +116,62 @@ function QrPage() {
           </CardContent>
         </Card>
       </main>
-    );
+    ); // Card API reference [web:44]
   }
 
   const isExpired = status === "EXPIRED";
   const isVerified = status === "VERIFIED";
 
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen bg-muted/30 p-4 sm:p-6">
-      {/* Header row: logo + help */}
-      <div className="w-full max-w-md flex items-center justify-between mb-4">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
+    // main is relative, so the absolute toggle is anchored to the page, not the card
+    <main className="relative flex flex-col items-center min-h-screen bg-muted/30 p-4 sm:p-6">
+      {/* Top-right mode toggle at page level */}
+      <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-50">
+        <ModeToggle />
+      </div>
+
+      {/* Single card with logo, QR, status, timer, instructions, and action */}
+      <div className="relative w-full max-w-md">
+        {/* Keep the glow behind content */}
+        <div
+          className="pointer-events-none absolute -inset-[1.5px] rounded-2xl bg-gradient-to-br from-blue-400/40 via-cyan-400/35 to-emerald-400/40 blur-sm z-0"
+          aria-hidden="true"
+        />
+        <Card className="relative shadow-lg border rounded-2xl z-10">
+          {/* Header with centered logo and title */}
+          <CardHeader className="pt-6 px-6">
+            <div className="w-full flex justify-center mb-3">
               <img
                 src={logo}
                 alt="Smart Bank"
-                className="w-24 sm:w-28 rounded-md shadow cursor-help select-none"
+                className="w-20 sm:w-24 rounded-md shadow select-none"
                 draggable={false}
               />
-            </TooltipTrigger>
-            <TooltipContent side="bottom" align="start" className="max-w-xs">
-              <p>Secure and trusted banking</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="ghost" className="gap-2">
-              <HelpCircle className="h-4 w-4" />
-              Help
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="right" className="w-80">
-            <SheetHeader>
-              <SheetTitle>How to login</SheetTitle>
-              <SheetDescription>Scan the QR with your Smart Bank app.</SheetDescription>
-            </SheetHeader>
-            <div className="mt-4 space-y-3 text-sm">
-              <div className="flex items-start gap-3">
-                <ShieldCheck className="h-4 w-4 mt-0.5 text-emerald-600" />
-                <p>Open the Smart Bank mobile app and go to “QR Login”.</p>
-              </div>
-              <div className="flex items-start gap-3">
-                <RefreshCcw className="h-4 w-4 mt-0.5 text-blue-600" />
-                <p>QR refreshes every 60s automatically for security.</p>
-              </div>
-              <p>If the session expires, return to the login page and try again.</p>
             </div>
-          </SheetContent>
-        </Sheet>
-      </div>
-
-      {/* QR Card with subtle gradient outline */}
-      <div className="relative w-full max-w-md">
-        <div className="pointer-events-none absolute -inset-[1.5px] rounded-2xl bg-gradient-to-br from-blue-400/40 via-cyan-400/35 to-emerald-400/40 blur-sm" aria-hidden="true" />
-        <Card className="relative shadow-lg border rounded-2xl">
-          <CardHeader className="text-center pt-6 px-6">
-            <CardTitle className="text-lg sm:text-xl font-semibold">Scan to login</CardTitle>
-            <CardDescription className="text-muted-foreground mt-1">
-              Use the mobile app to scan this code
-            </CardDescription>
+            <div className="text-center">
+              <CardTitle className="text-lg sm:text-xl font-semibold">Scan to login</CardTitle>
+              <CardDescription className="text-muted-foreground mt-1">
+                Use the mobile app to scan this code
+              </CardDescription>
+            </div>
           </CardHeader>
 
           <Separator className="mx-6 mt-2" />
 
           <CardContent className="flex flex-col items-center gap-5 py-6">
-            {/* QR with fixed square ratio, responsive size */}
+            {/* QR with white box for scannability in dark mode */}
             <div className="w-[220px] sm:w-[240px]">
               <AspectRatio ratio={1}>
                 <div className="p-2 rounded-lg bg-white shadow-sm h-full w-full flex items-center justify-center">
                   {qrValue ? (
-                    <QRCodeCanvas value={qrValue} size={200} />
+                    <QRCodeCanvas
+                      value={qrValue}
+                      size={200}
+                      bgColor="#ffffff"
+                      fgColor="#000000"
+                      includeMargin={false}
+                      level="M"
+                    />
                   ) : (
                     <Skeleton className="h-full w-full rounded-md" />
                   )}
@@ -192,12 +179,10 @@ function QrPage() {
               </AspectRatio>
             </div>
 
-            {/* Status + copy session */}
+            {/* Status */}
             <div className="flex items-center gap-2">
               <Badge
-                variant={
-                  isVerified ? "default" : isExpired ? "destructive" : "secondary"
-                }
+                variant={isVerified ? "default" : isExpired ? "destructive" : "secondary"}
                 className="uppercase tracking-wide font-semibold px-3 py-1"
                 aria-live="polite"
                 aria-atomic="true"
@@ -212,7 +197,7 @@ function QrPage() {
               <Progress value={(timeLeft / 60) * 100} className="h-2.5 rounded-full" />
             </div>
 
-            {/* Error or expired alerts */}
+            {/* Errors / expiry */}
             {error && (
               <Alert variant="destructive" className="w-full">
                 <AlertTitle>Connection issue</AlertTitle>
@@ -227,6 +212,23 @@ function QrPage() {
                 </AlertDescription>
               </Alert>
             )}
+
+            {/* Inline instructions inside the Card */}
+            <div className="w-full rounded-lg border p-4 bg-background/60">
+              <p className="font-medium mb-3 text-sm">How to login</p>
+              <ul className="list-disc pl-5 space-y-2 text-sm text-muted-foreground">
+                <li className="flex gap-2 items-start">
+                  <ShieldCheck className="h-4 w-4 mt-0.5 text-emerald-600 shrink-0" />
+                  <span>Open the Smart Bank mobile app and go to “QR Login”.</span>
+                </li>
+                <li className="flex gap-2 items-start">
+                  <RefreshCcw className="h-4 w-4 mt-0.5 text-blue-600 shrink-0" />
+                  <span>QR refreshes every 60s automatically for security.</span>
+                </li>
+                <li>Keep this card open until the login is verified.</li>
+                <li>If the session expires, return to the login page and try again.</li>
+              </ul>
+            </div>
 
             {/* Actions */}
             <div className="flex w-full justify-end gap-2">

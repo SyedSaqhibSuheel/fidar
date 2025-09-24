@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import AppSidebar from "@/components/sidebar/app-sidebar";
 import RecentTransactionsCard from "./dashboard/RecentTransactionCard";
 import TransactionsChart from "@/components/dashboard/transactions-chart";
@@ -26,7 +26,9 @@ export default function DashboardPage() {
 
       // 1. Get user info
       const userRes = await fetch(`${API_BASE}/iam/accounts/me`, { headers });
+      console.log("userRes", userRes)
       const userData = await userRes.json();
+      console.log("userData", userRes)
       setUser(userData);
 
       // 2. Get wallet balance
@@ -38,17 +40,60 @@ export default function DashboardPage() {
       const txRes = await fetch(
         `${API_BASE}/iam/transactions?page=0&size=10&sort=createdAt,DESC`,
         { headers }
-      );
-      const txData = await txRes.json();
-      setTransactions(txData.content || txData); // handle pagination wrapper
+      ); 
+      const txJson = await txRes.json();
+      // Handle HAL _embedded.transactions; fallback to content or array
+      const txItems =
+        txJson?._embedded?.transactions ??
+        txJson?.content ??
+        (Array.isArray(txJson) ? txJson : []);
+      setTransactions(txItems); // Normalize collection for table/card [web:152][web:157]
     } catch (err) {
       console.error("Error fetching dashboard data:", err);
     }
   };
 
   useEffect(() => {
-    if (token) fetchData();
+     if (token) fetchData();
   }, []);
+
+  // Build chart data: monthly buckets of credit (DEPOSIT) vs debit (TRANSFER outflow)
+  const chartData = useMemo(() => {
+    // Helper: month key "YYYY-MM" and label "Sep"
+    const toMonthKey = (iso) => {
+      const d = new Date(iso);
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      return `${y}-${m}`;
+    };
+    const toMonthLabel = (iso) =>
+      new Date(iso).toLocaleString(undefined, { month: "short" }); // Recharts expects string categories [web:146]
+
+    const buckets = new Map(); // key: YYYY-MM -> { label, credit, debit }
+
+    for (const t of transactions) {
+      if (!t?.createdAt || !t?.amount?.amount) continue;
+      const key = toMonthKey(t.createdAt);
+      const label = toMonthLabel(t.createdAt);
+      if (!buckets.has(key)) buckets.set(key, { month: label, credit: 0, debit: 0 });
+
+      const amt = Number(t.amount.amount) || 0;
+      if (t.category === "DEPOSIT") {
+        buckets.get(key).credit += amt;
+      } else if (t.category === "TRANSFER") {
+        // Treat transfers here as outflow from this wallet, show as debit magnitude
+        buckets.get(key).debit += amt;
+      }
+      // If more categories exist (WITHDRAWAL, PAYMENT), extend mapping as needed. [web:146]
+    }
+
+    // Sort by key asc and return latest 6 months for the chart
+    const sorted = Array.from(buckets.entries())
+      .sort((a, b) => (a[0] < b[0] ? -1 : 1))
+      .map(([, v]) => v);
+    const last6 = sorted.slice(-6);
+    return last6.length ? last6 : [];
+  }, [transactions]); // Build Recharts-ready array of { month, credit, debit } [web:146][web:151]
 
   return (
     <div className="min-h-screen">
@@ -89,7 +134,10 @@ export default function DashboardPage() {
                   </p>
                 </div>
                 <div className="p-6 pt-1">
-                  <TransactionsChart heightClass="h-56 xs:h-64 sm:h-72 lg:h-96" />
+                  <TransactionsChart
+                    data={chartData}
+                    heightClass="h-56 xs:h-64 sm:h-72 lg:h-96"
+                  />
                 </div>
               </div>
             </section>

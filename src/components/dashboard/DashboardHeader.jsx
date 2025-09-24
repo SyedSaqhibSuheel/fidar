@@ -10,7 +10,7 @@ import { Link } from "react-router-dom"
 
 export default function DashboardHeader({ open, onOpenChange }) {
   return (
-    <header className="bg-card border-b border-border px-4 lg:px-8 shadow-sm sticky top-0 z-40">
+    <header className="bg-card border-b-2 border-b-border/80 px-4 lg:px-8 shadow-sm sticky top-0 z-40">
       <div className="flex items-center h-14 w-full">
         <Sheet open={open} onOpenChange={onOpenChange}>
           <SheetTrigger asChild>
