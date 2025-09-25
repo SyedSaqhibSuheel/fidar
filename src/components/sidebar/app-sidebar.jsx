@@ -20,7 +20,7 @@ export default function AppSidebar({ onNavigate }) {
     <aside
       className="
         w-60 shrink-0 bg-sidebar text-sidebar-foreground
-        border-r-0 lg:border-r-2 lg:border-r-border/80
+        border-r-2 lg:border-r-gray-300 lg:dark:border-r-gray-700
         lg:sticky lg:top-14 lg:h-[calc(100vh-56px)]
       "
       role="navigation"
