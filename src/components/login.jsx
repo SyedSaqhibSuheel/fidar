@@ -89,7 +89,10 @@ function Login() {
           max-w-[21rem]
           sm:max-w-sm
           md:max-w-md
-          shadow-lg border
+          shadow-lg
+          border-2
+          border-slate-300
+          dark:border-slate-700
         "
       >
         <CardHeader className="flex flex-col items-center space-y-3 pt-6 sm:pt-8">
