@@ -14,86 +14,128 @@ export default function DashboardPage() {
 
   const API_BASE = "http://localhost:8080";
 
-  // get token (adjust if stored differently)
-  const token = localStorage.getItem("authToken");
-
   const fetchData = async () => {
     try {
+      // 1) Get token text, extract quoted value
+      const tokenRes = await fetch(`${API_BASE}/iam/accounts/token`);
+      const tokenString = await tokenRes.text();
+      const token = tokenString.split('"')[1];
       const headers = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       };
+      setUser({ token });
 
-      // 1. Get user info
-      const userRes = await fetch(`${API_BASE}/iam/accounts/me`, { headers });
-      console.log("userRes", userRes)
-      const userData = await userRes.json();
-      console.log("userData", userRes)
-      setUser(userData);
-
-      // 2. Get wallet balance
+      // 2) Get wallet(s) and normalize balance
       const walletRes = await fetch(`${API_BASE}/iam/wallets`, { headers });
       const walletData = await walletRes.json();
-      setBalance(walletData.balance); // adjust if API shape is different
+      console.log("walletData", walletData)
+      
+      // Support either a single wallet object or HAL list
+      let normalizedBalance = null;
+      if (walletData?.balance?.amount != null) {
+        normalizedBalance = walletData.balance; // single wallet
+      } else if (Array.isArray(walletData) && walletData[0]?.balance?.amount != null) {
+        normalizedBalance = walletData[0].balance; // plain array
+      } else if (walletData?._embedded?.wallets?.[0]?.balance?.amount != null) {
+        normalizedBalance = walletData._embedded.wallets[0].balance; // HAL
+      }
+      setBalance(normalizedBalance);
 
-      // 3. Get transactions
+      // 3) Get transactions (match HAL link uses createdAt,desc)
       const txRes = await fetch(
-        `${API_BASE}/iam/transactions?page=0&size=10&sort=createdAt,DESC`,
+        `${API_BASE}/iam/transactions?page=0&size=10&sort=createdAt,desc`,
         { headers }
-      ); 
+      );
       const txJson = await txRes.json();
-      // Handle HAL _embedded.transactions; fallback to content or array
+      console.log("txJson", txJson)
       const txItems =
         txJson?._embedded?.transactions ??
         txJson?.content ??
         (Array.isArray(txJson) ? txJson : []);
-      setTransactions(txItems); // Normalize collection for table/card [web:152][web:157]
+      console.log("txItems",txItems)
+
+
+      // Normalize to the shape RecentTransactionsCard expects
+      const normalized = txItems.map((t) => {
+        const isCredit = t.category === "DEPOSIT";
+        const amountNumber = Number(t?.amount?.amount ?? 0);
+        const amountStr = `USD ${amountNumber.toFixed(2)}`;
+        const timeStr = t.createdAt
+          ? new Date(t.createdAt).toLocaleString()
+          : "";
+        const description =
+          t.category === "DEPOSIT"
+            ? "Deposit"
+            : t.category === "TRANSFER"
+            ? "Transfer"
+            : t.category || "Transaction";
+        return {
+          id: t.id,
+          // RecentTransactionsCard filters on 'type' === 'credit' | 'debit'
+          type: isCredit ? "credit" : "debit",
+          amount: amountStr,
+          description,
+          time: timeStr,
+          status: t.active ? "completed" : "pending",
+          // Keep original for charts
+          _raw: t,
+        };
+      });
+
+      setTransactions(normalized);
     } catch (err) {
       console.error("Error fetching dashboard data:", err);
     }
   };
 
   useEffect(() => {
-     if (token) fetchData();
+    fetchData();
   }, []);
 
-  // Build chart data: monthly buckets of credit (DEPOSIT) vs debit (TRANSFER outflow)
+  // Build chart data: monthly credit vs debit from normalized transactions
   const chartData = useMemo(() => {
-    // Helper: month key "YYYY-MM" and label "Sep"
+    const buckets = new Map(); // YYYY-MM -> { month, credit, debit }
+
     const toMonthKey = (iso) => {
       const d = new Date(iso);
+      if (Number.isNaN(d.getTime())) return null;
       const y = d.getFullYear();
       const m = String(d.getMonth() + 1).padStart(2, "0");
       return `${y}-${m}`;
     };
-    const toMonthLabel = (iso) =>
-      new Date(iso).toLocaleString(undefined, { month: "short" }); // Recharts expects string categories [web:146]
+    const toMonthLabel = (iso) => {
+      const d = new Date(iso);
+      return Number.isNaN(d.getTime())
+        ? ""
+        : d.toLocaleString(undefined, { month: "short" });
+    };
 
-    const buckets = new Map(); // key: YYYY-MM -> { label, credit, debit }
+    for (const it of transactions) {
+      const raw = it?._raw;
+      const createdAt = raw?.createdAt;
+      const amtNum = Number(raw?.amount?.amount ?? 0);
+      if (!createdAt || !Number.isFinite(amtNum)) continue;
 
-    for (const t of transactions) {
-      if (!t?.createdAt || !t?.amount?.amount) continue;
-      const key = toMonthKey(t.createdAt);
-      const label = toMonthLabel(t.createdAt);
-      if (!buckets.has(key)) buckets.set(key, { month: label, credit: 0, debit: 0 });
-
-      const amt = Number(t.amount.amount) || 0;
-      if (t.category === "DEPOSIT") {
-        buckets.get(key).credit += amt;
-      } else if (t.category === "TRANSFER") {
-        // Treat transfers here as outflow from this wallet, show as debit magnitude
-        buckets.get(key).debit += amt;
+      const key = toMonthKey(createdAt);
+      if (!key) continue;
+      if (!buckets.has(key)) {
+        buckets.set(key, { month: toMonthLabel(createdAt), credit: 0, debit: 0 });
       }
-      // If more categories exist (WITHDRAWAL, PAYMENT), extend mapping as needed. [web:146]
+
+      if (it.type === "credit") {
+        buckets.get(key).credit += amtNum;
+      } else if (it.type === "debit") {
+        buckets.get(key).debit += amtNum;
+      }
     }
 
-    // Sort by key asc and return latest 6 months for the chart
     const sorted = Array.from(buckets.entries())
       .sort((a, b) => (a[0] < b[0] ? -1 : 1))
       .map(([, v]) => v);
-    const last6 = sorted.slice(-6);
-    return last6.length ? last6 : [];
-  }, [transactions]); // Build Recharts-ready array of { month, credit, debit } [web:146][web:151]
+
+    return sorted.slice(-6);
+  }, [transactions]);
 
   return (
     <div className="min-h-screen">
@@ -107,9 +149,11 @@ export default function DashboardPage() {
           <div className="max-w-screen-2xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
             <section className="lg:col-span-6 space-y-4">
               <BalanceCard
-                name={user?.name || "Loading..."}
+                name={user ? "Wallet" : "Loading..."}
                 balanceLabel="Your balance is"
-                balanceValue={balance ? `USD ${balance}` : "Loading..."}
+                balanceValue={
+                  balance?.amount != null ? `USD ${Number(balance.amount).toFixed(2)}` : "Loading..."
+                }
               />
               <QuickActionsGrid />
               <button className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-2 rounded-lg ring-1 ring-white/10">

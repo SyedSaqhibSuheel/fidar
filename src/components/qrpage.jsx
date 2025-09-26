@@ -27,7 +27,7 @@ function QrPage() {
   const [error, setError] = useState("");
 
   // QR value
-  const qrValue = useMemo(() => sessionData?.jwt ?? "", [sessionData]); // Absolute/fixed positioning depends on nearest positioned ancestor [web:83][web:88][web:98]
+  const qrValue = useMemo(() => JSON.stringify(sessionData) ?? "", [sessionData]); // Absolute/fixed positioning depends on nearest positioned ancestor [web:83][web:88][web:98]
 
   // Refresh QR every 60s
   useEffect(() => {

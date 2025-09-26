@@ -14,16 +14,17 @@ export default function TransactionsChart({
   data,
   heightClass = "h-80",
   currency = "USD",
-  locale = undefined, // browser default
+  locale = undefined,
 }) {
   const creditColor = "hsl(var(--chart-2))";
   const debitColor = "hsl(var(--chart-1))";
   const gridColor = "hsl(var(--border))";
 
-  // Only real data; show overlay if empty
-  const hasData = Array.isArray(data) && data.length > 0; // Recharts expects an array of plain objects [web:146][web:151]
+  const hasData = Array.isArray(data) && data.length > 0;
+  console.log("Data", data)
 
-  // Currency formatter
+  console.log("hasData", hasData)
+
   const fmt = useMemo(() => {
     try {
       return new Intl.NumberFormat(locale, {
@@ -34,7 +35,7 @@ export default function TransactionsChart({
     } catch {
       return { format: (n) => `$${Math.round(n)}` };
     }
-  }, [currency, locale]); // Standard Intl.NumberFormat usage for currency display [web:168][web:170][web:173]
+  }, [currency, locale]);
 
   return (
     <div className={`relative w-full ${heightClass} min-h-[12rem] sm:min-h-[16rem]`}>
@@ -45,10 +46,7 @@ export default function TransactionsChart({
       )}
 
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart
-          data={hasData ? data : []}
-          margin={{ top: 6, right: 8, left: 0, bottom: 2 }}
-        >
+        <AreaChart data={hasData ? data : []} margin={{ top: 6, right: 8, left: 0, bottom: 2 }}>
           <defs>
             <linearGradient id="creditFill" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor={creditColor} stopOpacity={0.35} />
