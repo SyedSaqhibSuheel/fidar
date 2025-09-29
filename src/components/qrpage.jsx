@@ -26,6 +26,7 @@ function QrPage() {
   const [status, setStatus] = useState("PENDING");
   const [error, setError] = useState("");
 
+
   // QR value
   const qrValue = useMemo(() => JSON.stringify(sessionData) ?? "", [sessionData]); // Absolute/fixed positioning depends on nearest positioned ancestor [web:83][web:88][web:98]
 
@@ -77,6 +78,7 @@ function QrPage() {
         const data = await res.json();
         setStatus(data.state);
         if (data.state === "VERIFIED") {
+          localStorage.setItem("sessionData", JSON.stringify(sessionData))
           clearInterval(statusInterval);
           navigate("/dashboard");
           toast({
