@@ -4,6 +4,10 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import QrPage from "./components/qrpage";
 import DashBoard from "./components/DashBoard";
 import ProfilePage from "./components/profile";
+import ActionsPage from "./demo/ActionPage";
+import CreateUserPage from "./demo/CreateUserButton";
+import CallVerificationPage from "./demo/CallVerification";
+import SalesVerificationPage from "./demo/SalesVerification";
 
 
 function App() {
@@ -16,6 +20,11 @@ function App() {
          <Route path="/qr" element={<QrPage/>} />
          <Route path="/dashboard" element={<DashBoard/>} />
          <Route path="/profile" element={<ProfilePage />} />
+         <Route path="/demo" element={<ActionsPage/>} />
+         <Route path="/create-user" element={<CreateUserPage />} />
+          <Route path="/call-verification" element={<CallVerificationPage />} />
+           <Route path="/sales-verification" element={<SalesVerificationPage />} />
+
 
         
       </Routes>
