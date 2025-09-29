@@ -13,9 +13,13 @@ export default function DashboardPage() {
   const [transactions, setTransactions] = useState([]);
 
   const API_BASE = "http://localhost:8080";
+  
 
   const fetchData = async () => {
     try {
+      const sessionData = JSON.parse(localStorage.getItem("sessionData"))
+      console.log("sessionData", sessionData);
+      console.log("sessionData", sessionData.sessionId);
       // 1) Get token text, extract quoted value
       const tokenRes = await fetch(`${API_BASE}/iam/accounts/token`);
       const tokenString = await tokenRes.text();
