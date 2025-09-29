@@ -21,9 +21,6 @@ export default function TransactionsChart({
   const gridColor = "hsl(var(--border))";
 
   const hasData = Array.isArray(data) && data.length > 0;
-  console.log("Data", data)
-
-  console.log("hasData", hasData)
 
   const fmt = useMemo(() => {
     try {

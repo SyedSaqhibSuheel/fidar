@@ -14,7 +14,7 @@ export default function RecentTransactionsCard({ items = [] }) {
   }, [items, filter]);
 
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden border border-gray-300 dark:border-border">
       <CardHeader className="pb-2 sm:pb-3 sticky top-0 z-10 bg-card/80 backdrop-blur supports-[backdrop-filter]:bg-card/60">
         <div className="flex items-center justify-between gap-2">
           <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
@@ -24,7 +24,7 @@ export default function RecentTransactionsCard({ items = [] }) {
 
           <div className="flex flex-wrap gap-1.5 justify-end">
             <button
-              className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium border ${
+              className={`px-3 py-1.5 rounded-full text-xs sm:text-sm border border-gray-300 dark:border-border font-medium ${
                 filter === "all" ? "bg-accent" : "hover:bg-accent/50"
               }`}
               onClick={() => setFilter("all")}
@@ -33,7 +33,7 @@ export default function RecentTransactionsCard({ items = [] }) {
               All
             </button>
             <button
-              className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium border ${
+              className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium border border-gray-300 dark:border-border ${
                 filter === "credit"
                   ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300"
                   : "hover:bg-accent/50"
@@ -44,7 +44,7 @@ export default function RecentTransactionsCard({ items = [] }) {
               In
             </button>
             <button
-              className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium border ${
+              className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium border border-gray-300 dark:border-border ${
                 filter === "debit"
                   ? "bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-300"
                   : "hover:bg-accent/50"
@@ -59,7 +59,7 @@ export default function RecentTransactionsCard({ items = [] }) {
       </CardHeader>
 
       <CardContent className="pt-0">
-        <ScrollArea className="h-[16rem] xs:h-[18rem] sm:h-[20rem] md:h-[22rem] lg:h-[19rem] rounded-md border border-border">
+        <ScrollArea className="h-[16rem] xs:h-[18rem] sm:h-[20rem] md:h-[22rem] lg:h-[19rem] rounded-md border border-gray-300 dark:border-border">
           <ul className="divide-y divide-border">
             {filtered.map(({ id, type, amount, description, time, status }) => {
               const isCredit = type === "credit";

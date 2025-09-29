@@ -19,7 +19,7 @@ export default function DashboardPage() {
     try {
       const sessionData = JSON.parse(localStorage.getItem("sessionData"))
       console.log("sessionData", sessionData);
-      console.log("sessionData", sessionData.sessionId);
+      console.log("sessionId", sessionData.sessionId);
       // 1) Get token text, extract quoted value
       const tokenRes = await fetch(`${API_BASE}/iam/accounts/token`);
       const tokenString = await tokenRes.text();
@@ -33,7 +33,6 @@ export default function DashboardPage() {
       // 2) Get wallet(s) and normalize balance
       const walletRes = await fetch(`${API_BASE}/iam/wallets`, { headers });
       const walletData = await walletRes.json();
-      console.log("walletData", walletData)
       
       // Support either a single wallet object or HAL list
       let normalizedBalance = null;
@@ -52,12 +51,10 @@ export default function DashboardPage() {
         { headers }
       );
       const txJson = await txRes.json();
-      console.log("txJson", txJson)
       const txItems =
         txJson?._embedded?.transactions ??
         txJson?.content ??
         (Array.isArray(txJson) ? txJson : []);
-      console.log("txItems",txItems)
 
 
       // Normalize to the shape RecentTransactionsCard expects
@@ -172,7 +169,7 @@ export default function DashboardPage() {
             </section>
 
             <section className="lg:col-span-12">
-              <div className="rounded-lg border bg-card">
+              <div className="rounded-lg bg-card border border-gray-300 dark:border-border">
                 <div className="p-6 pb-2">
                   <h3 className="font-semibold leading-none tracking-tight">
                     Transactions Overview
