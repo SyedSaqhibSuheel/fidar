@@ -59,6 +59,7 @@ export default function CreateUserPage() {
               placeholder="Enter customer ID"
               value={form.customerId}
               onChange={handleChange}
+              className="border border-gray-400 dark:border-border"
             />
           </div>
 
@@ -70,6 +71,7 @@ export default function CreateUserPage() {
               placeholder="Enter full name"
               value={form.name}
               onChange={handleChange}
+              className="border border-gray-400 dark:border-border"
             />
           </div>
 
@@ -81,6 +83,7 @@ export default function CreateUserPage() {
               placeholder="Enter username"
               value={form.username}
               onChange={handleChange}
+              className="border border-gray-400 dark:border-border"
             />
           </div>
 
@@ -92,6 +95,7 @@ export default function CreateUserPage() {
               placeholder="Enter phone number"
               value={form.phone}
               onChange={handleChange}
+              className="border border-gray-400 dark:border-border"
             />
           </div>
 
@@ -103,6 +107,7 @@ export default function CreateUserPage() {
               placeholder="Enter card number"
               value={form.card}
               onChange={handleChange}
+              className="border border-gray-400 dark:border-border"
             />
           </div>
 

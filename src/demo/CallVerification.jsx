@@ -49,6 +49,7 @@ export default function CallVerificationPage() {
               placeholder="Enter employee ID"
               value={empId}
               onChange={(e) => setEmpId(e.target.value)}
+              className="border border-gray-400 dark:border-border"
             />
           </div>
 

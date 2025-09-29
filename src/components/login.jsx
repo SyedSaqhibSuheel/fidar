@@ -152,6 +152,7 @@ function Login() {
                       sm:h-10
                       sm:text-sm
                       md:text-base
+                      border border-gray-400 dark:border-border
                     "
                   />
                 </TooltipTrigger>
