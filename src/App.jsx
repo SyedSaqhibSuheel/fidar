@@ -8,6 +8,8 @@ import ActionsPage from "./demo/ActionPage";
 import CreateUserPage from "./demo/CreateUserButton";
 import CallVerificationPage from "./demo/CallVerification";
 import SalesVerificationPage from "./demo/SalesVerification";
+import ATMDashboard from "./components/ATM-Dashboard";
+import AtmQrPage from "./components/Atm-qrpage";
 
 
 function App() {
@@ -18,8 +20,10 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
          <Route path="/qr" element={<QrPage/>} />
+         <Route path="/atm-qr" element={<AtmQrPage />} />
          <Route path="/dashboard" element={<DashBoard/>} />
          <Route path="/profile" element={<ProfilePage />} />
+         <Route path="/atm-dashboard" element={<ATMDashboard />} />
          <Route path="/demo" element={<ActionsPage/>} />
          <Route path="/create-user" element={<CreateUserPage />} />
           <Route path="/call-verification" element={<CallVerificationPage />} />
