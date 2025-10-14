@@ -13,58 +13,51 @@ export default function DashboardPage() {
   const [transactions, setTransactions] = useState([]);
 
   const API_BASE = "http://localhost:8080";
-  
 
   const fetchData = async () => {
     try {
-      const sessionData = JSON.parse(localStorage.getItem("sessionData"))
-      console.log("sessionData", sessionData);
-      console.log("sessionId", sessionData.sessionId);
-      // 1) Get token text, extract quoted value
+      // 1) Fetch session token
       const tokenRes = await fetch(`${API_BASE}/iam/accounts/token`);
       const tokenString = await tokenRes.text();
       const token = tokenString.split('"')[1];
+
+      // Store token in localStorage for other components
+      localStorage.setItem("authToken", token);
+
       const headers = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       };
       setUser({ token });
 
-      // 2) Get wallet(s) and normalize balance
+      // 2) Fetch wallet(s) and normalize balance
       const walletRes = await fetch(`${API_BASE}/iam/wallets`, { headers });
       const walletData = await walletRes.json();
-      
-      // Support either a single wallet object or HAL list
+
       let normalizedBalance = null;
       if (walletData?.balance?.amount != null) {
-        normalizedBalance = walletData.balance; // single wallet
+        normalizedBalance = walletData.balance;
       } else if (Array.isArray(walletData) && walletData[0]?.balance?.amount != null) {
-        normalizedBalance = walletData[0].balance; // plain array
+        normalizedBalance = walletData[0].balance;
       } else if (walletData?._embedded?.wallets?.[0]?.balance?.amount != null) {
-        normalizedBalance = walletData._embedded.wallets[0].balance; // HAL
+        normalizedBalance = walletData._embedded.wallets[0].balance;
       }
       setBalance(normalizedBalance);
 
-      // 3) Get transactions (match HAL link uses createdAt,desc)
+      // 3) Fetch recent transactions
       const txRes = await fetch(
         `${API_BASE}/iam/transactions?page=0&size=10&sort=createdAt,desc`,
         { headers }
       );
       const txJson = await txRes.json();
       const txItems =
-        txJson?._embedded?.transactions ??
-        txJson?.content ??
-        (Array.isArray(txJson) ? txJson : []);
+        txJson?._embedded?.transactions ?? txJson?.content ?? (Array.isArray(txJson) ? txJson : []);
 
-
-      // Normalize to the shape RecentTransactionsCard expects
       const normalized = txItems.map((t) => {
         const isCredit = t.category === "DEPOSIT";
         const amountNumber = Number(t?.amount?.amount ?? 0);
         const amountStr = `USD ${amountNumber.toFixed(2)}`;
-        const timeStr = t.createdAt
-          ? new Date(t.createdAt).toLocaleString()
-          : "";
+        const timeStr = t.createdAt ? new Date(t.createdAt).toLocaleString() : "";
         const description =
           t.category === "DEPOSIT"
             ? "Deposit"
@@ -73,13 +66,11 @@ export default function DashboardPage() {
             : t.category || "Transaction";
         return {
           id: t.id,
-          // RecentTransactionsCard filters on 'type' === 'credit' | 'debit'
           type: isCredit ? "credit" : "debit",
           amount: amountStr,
           description,
           time: timeStr,
           status: t.active ? "completed" : "pending",
-          // Keep original for charts
           _raw: t,
         };
       });
