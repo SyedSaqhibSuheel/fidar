@@ -1,7 +1,7 @@
 export const ATM_COLORS = {
   room: "from-slate-900 via-slate-800 to-slate-900",
   bezel: "bg-neutral-950",
-  bezelAccent: "bg-gradient-to-b from-zinc-800/60 to-black/60",
+  bezelAccent: "bg-gradient-to-b from-zinc-600/60 to-black/60",
   screen: "bg-zinc-900",
   screenText: "text-zinc-50",
   accent: "text-emerald-400",

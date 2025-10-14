@@ -132,6 +132,13 @@ export default function ATMDashboard() {
     }
   };
 
+  const handleOption = (label) => {
+    const leftIdx = SOFT_LEFT.indexOf(label);
+    if (leftIdx !== -1) return handleSoftLeft(leftIdx);
+    const rightIdx = SOFT_RIGHT.indexOf(label);
+    if (rightIdx !== -1) return handleSoftRight(rightIdx);
+  };
+
   const handleKey = async (k) => {
     if (k === "Cancel") {
       resetFlow();
@@ -244,19 +251,19 @@ export default function ATMDashboard() {
   };
 
   return (
-    <div className={`min-h-dvh w-full bg-gradient-to-br ${ATM_COLORS.room} flex items-center justify-center px-3 sm:px-4 py-8`}>
-      <Card className="w-full max-w-6xl shadow-[0_30px_80px_-20px_rgba(0,0,0,0.6)] border border-zinc-800 overflow-hidden rounded-2xl">
+    <div className={`fixed inset-0 min-h-dvh w-full bg-gradient-to-br ${ATM_COLORS.room} flex items-center justify-center`}>
+      <Card className="w-full h-full shadow-[0_30px_80px_-20px_rgba(0,0,0,0.6)] border border-zinc-800 overflow-hidden rounded-2xl grid grid-rows-[auto,1fr,auto]">
         <AtmHeader />
 
-        <CardContent className={`p-0 ${ATM_COLORS.bezel}`}>
-          <div className="grid grid-cols-12 gap-0">
+        <CardContent className={`${ATM_COLORS.bezel} p-0 sm:p-4 min-h-0 h-full overflow-y-auto`}>
+          <div className="flex flex-col sm:grid sm:grid-cols-12 gap-0 min-h-0 h-full">
             <SoftKeysLeft onSelect={handleSoftLeft} />
-            <AtmScreen balance={balance} currency={currency} />
+            <AtmScreen balance={balance} currency={currency} onSelectOption={handleOption} />
             <SoftKeysRight onSelect={handleSoftRight} />
           </div>
         </CardContent>
 
-        <CardFooter className={`${ATM_COLORS.bezel} p-4 sm:p-5`}>
+        <CardFooter className={`${ATM_COLORS.bezel} p-4 sm:p-5 md:z-10`}>
           <FooterPanel
             dispensing={dispensing}
             onSoftLeft={handleSoftLeft}
@@ -265,11 +272,8 @@ export default function ATMDashboard() {
             onKeypad={handleKey}
           />
         </CardFooter>
-
-        <div className={`${ATM_COLORS.bezel} px-5 pb-5`}>
-          <div className="h-3 rounded-sm bg-gradient-to-b from-emerald-700/50 to-zinc-900" />
-        </div>
       </Card>
+
 
       <OperationDialog
         open={dialogOpen}

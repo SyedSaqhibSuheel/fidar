@@ -129,17 +129,24 @@ function Login() {
       <div
         className="
           relative w-full max-w-6xl
-          flex flex-col lg:flex-row
+          flex flex-col [@media(min-width:942px)]:flex-row
           min-h-screen
-          lg:min-h-dvh
-          before:hidden lg:before:block
+          md:min-h-dvh
+          before:hidden [@media(min-width:942px)]:before:block
           before:content-[''] before:absolute before:top-0 before:bottom-0 before:left-1/2
           before:w-[2px] before:bg-zinc-400/70 dark:before:bg-zinc-600/80 before:shadow-sm
         "
       >
 
         {/* LEFT HALF */}
-        <div className="basis-1/2 flex items-center justify-start pr-0 lg:pr-6 mb-8 lg:mb-0">
+        <div
+          className="
+            basis-1/2 flex items-center justify-center
+            [@media(min-width:942px)]:justify-start
+            pr-0 [@media(min-width:942px)]:pr-6
+            mb-8 [@media(min-width:942px)]:mb-0
+          "
+        >
           <Card
             className="
               w-full max-w-md
@@ -276,7 +283,13 @@ function Login() {
         </div>
 
         {/* RIGHT HALF with themed background */}
-        <div className="basis-1/2 flex items-center justify-end pl-0 lg:pl-6">
+        <div
+          className="
+            basis-1/2 flex items-center justify-center
+            [@media(min-width:942px)]:justify-end
+            pl-0 [@media(min-width:942px)]:pl-6
+          "
+        >
           <Card
             className="
               w-full max-w-md

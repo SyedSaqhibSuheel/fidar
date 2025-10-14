@@ -25,7 +25,7 @@ export default function NumericKeypad({ onKey }) {
           onClick={() => onKey(k)}
           variant="secondary"
           className={[
-            "h-12 text-base rounded-md shadow-sm",
+            "h-10 sm:h-11 md:h-12 text-sm sm:text-base rounded-md shadow-sm",
             k === "Enter" ? ATM_COLORS.enter : "",
             k === "Clear" ? ATM_COLORS.clear : "",
             k !== "Enter" && k !== "Clear" ? ATM_COLORS.secondary + " text-white" : "",
@@ -37,7 +37,7 @@ export default function NumericKeypad({ onKey }) {
       <Button
         aria-label="key Cancel"
         onClick={() => onKey("Cancel")}
-        className={`col-span-3 h-12 rounded-md ${ATM_COLORS.cancel}`}
+        className={`col-span-3 h-10 sm:h-11 md:h-12 text-sm sm:text-base rounded-md ${ATM_COLORS.cancel}`}
       >
         Cancel
       </Button>

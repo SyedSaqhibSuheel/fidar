@@ -1,4 +1,5 @@
 const BASE = "http://localhost:8080/iam";
+const deviceId = crypto.randomUUID();
 
 const getToken = () => {
   const raw = localStorage.getItem("AtmsessionData");
@@ -49,10 +50,14 @@ export async function getApprovalStatus(sessionId) {
 export async function postWithdraw(amount) {
   const res = await fetch(`${BASE}/transactions/withdraw`, {
     method: "POST",
-    headers: authHeaders(),
+    headers: {
+      ...authHeaders(),
+      "x-device-id": String(deviceId),
+    },
     body: JSON.stringify({ amount : String(amount) }),
   });
   if (!res.ok) throw new Error(`Withdraw failed: ${res.status}`);
+  console.log("RES", res)
   return res.json();
 }
 
