@@ -231,7 +231,12 @@ function Login() {
               </div>
 
               <Button
-                className="w-full h-11 text-[1rem] sm:h-10 sm:text-sm"
+                className="w-full h-11 text-[1rem] sm:h-10 sm:text-sm 
+             bg-gradient-to-r from-pink-900 via-purple-900 to-blue-900 
+             hover:from-pink-800 hover:via-purple-800 hover:to-blue-800 
+             text-white font-semibold shadow-xl transition-all duration-300 
+             hover:shadow-[0_0_20px_rgba(88,28,135,0.6)] 
+             hover:scale-[1.02] active:scale-95 rounded-lg"
                 disabled={!customerId.trim() || loading}
                 onClick={handleLogin}
                 aria-label="Login to your account"
@@ -314,7 +319,7 @@ function Login() {
                   font-bold tracking-tight select-none
                 "
               >
-                ATM Access
+                Smart Bank ATM
               </CardTitle>
               <CardDescription
                 className="
@@ -327,7 +332,7 @@ function Login() {
                   text-muted-foreground
                 "
               >
-                Enter ATM number or ID to open the dashboard.
+                Please login with your Customer ID to continue.
               </CardDescription>
             </CardHeader>
 
@@ -337,14 +342,14 @@ function Login() {
                   htmlFor="atm-id"
                   className="font-medium text-[0.95rem] sm:text-sm md:text-base"
                 >
-                  ATM Number / ID
+                  Customer ID
                 </Label>
                 <TooltipProvider delayDuration={250}>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Input
                         id="atm-id"
-                        placeholder="Enter ATM number or ID"
+                        placeholder="Enter Your Customer ID"
                         value={atmId}
                         onChange={(e) => setAtmId(e.target.value)}
                         onKeyDown={handleAtmKeyPress}
@@ -372,22 +377,28 @@ function Login() {
                   </Tooltip>
                 </TooltipProvider>
               </div>
+<Button
+  className="w-full h-11 text-[1rem] sm:h-10 sm:text-sm 
+             bg-gradient-to-r from-pink-900 via-purple-900 to-blue-900 
+             hover:from-pink-800 hover:via-purple-800 hover:to-blue-800 
+             text-white font-semibold shadow-xl transition-all duration-300 
+             hover:shadow-[0_0_20px_rgba(88,28,135,0.6)] 
+             hover:scale-[1.02] active:scale-95 rounded-lg"
+  disabled={!atmId.trim() || atmLoading}
+  onClick={handleAtmSubmit}
+  aria-label="Login to ATM dashboard"
+>
+  {atmLoading ? (
+    <>
+      <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Opening...
+    </>
+  ) : (
+    "Login to ATM Dashboard"
+  )}
+</Button>
 
-              <Button
-                className="w-full h-11 text-[1rem] sm:h-10 sm:text-sm"
-                disabled={!atmId.trim() || atmLoading}
-                onClick={handleAtmSubmit}
-                aria-label="Login to ATM dashboard"
-                variant="secondary"
-              >
-                {atmLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Opening...
-                  </>
-                ) : (
-                  "Login to ATM Dashboard"
-                )}
-              </Button>
+
+
             </CardContent>
 
             <Separator className="mx-4 sm:mx-6" />

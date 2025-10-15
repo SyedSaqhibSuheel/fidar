@@ -6,10 +6,20 @@ import { faBuildingColumns } from "@fortawesome/free-solid-svg-icons";
 
 export default function BalanceCard({ name, balanceLabel, balanceValue }) {
   return (
-    <Card className="relative overflow-hidden border-0 shadow-lg h-52 lg:h-64 rounded-xl">
-      <div className="pointer-events-none absolute -inset-[1.5px] rounded-xl bg-gradient-to-br from-blue-400/60 via-cyan-400/50 to-emerald-400/60 blur-[2px]" aria-hidden="true" />
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800" aria-hidden="true" />
-      <div className="absolute inset-0 bg-[linear-gradient(120deg,transparent_0%,rgba(255,255,255,0.18)_35%,transparent_70%)] mix-blend-soft-light" aria-hidden="true" />
+    <Card className="relative overflow-hidden border-0 shadow-xl h-52 lg:h-64 rounded-2xl
+                     bg-gradient-to-r from-pink-900 via-purple-900 to-blue-900
+                     hover:from-pink-800 hover:via-purple-800 hover:to-blue-800
+                     transition-all duration-300
+                     hover:shadow-[0_0_20px_rgba(88,28,135,0.6)]">
+      
+      {/* Optional soft glow behind card */}
+      <div className="pointer-events-none absolute -inset-[1.5px] rounded-2xl bg-gradient-to-br
+                      from-pink-800/40 via-purple-800/35 to-blue-800/40 blur-sm" 
+           aria-hidden="true" />
+      
+      {/* Light overlay for shine effect */}
+      <div className="absolute inset-0 bg-[linear-gradient(120deg,transparent_0%,rgba(255,255,255,0.12)_35%,transparent_70%)] 
+                      mix-blend-soft-light" aria-hidden="true" />
 
       <CardContent className="relative h-full p-5 lg:p-6 text-white flex items-center">
         <div className="flex w-full justify-between items-start">

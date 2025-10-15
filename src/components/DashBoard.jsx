@@ -148,10 +148,18 @@ export default function DashboardPage() {
                 }
               />
               <QuickActionsGrid />
-              <button className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-2 rounded-lg ring-1 ring-white/10">
-                <i className="fa-solid fa-mobile-screen-button h-4 w-4" />
-                Authorize secondary device
-              </button>
+            <button
+  className="w-full h-12 
+             bg-gradient-to-r from-blue-800 to-indigo-800 
+             hover:from-blue-700 hover:to-indigo-700 
+             text-white font-semibold shadow-lg hover:shadow-[0_0_20px_rgba(79,70,229,0.6)] 
+             transition-all duration-300 flex items-center justify-center gap-2 
+             rounded-lg ring-1 ring-white/10 hover:scale-[1.02] active:scale-95"
+>
+  <i className="fa-solid fa-mobile-screen-button h-4 w-4" />
+  Authorize secondary device
+</button>
+
               <div className="my-2 h-px bg-border" />
             </section>
 
