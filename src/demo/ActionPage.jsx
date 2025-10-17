@@ -1,58 +1,141 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import ThreeDSButton from "./ThreeDSButton";
+import {
+  Plus,
+  Phone,
+  BadgeCheck,
+  ShieldCheck,
+  ChevronLeft,
+  Settings,
+  FileText,
+  Lock,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 export default function ActionsPage() {
-  const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 p-6">
-      <Card className="w-full max-w-lg shadow-lg border border-gray-200">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center">
-            Verification Actions
-          </CardTitle>
-        </CardHeader>
-
-        <CardContent className="flex flex-col items-center space-y-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
+      {/* Top bar */}
+      <header className="sticky top-0 z-20 w-full border-b bg-white/80 backdrop-blur-md">
+        <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="h-5 w-5 text-primary" />
+            <span className="font-semibold text-sm tracking-tight">
+              Verification Console
+            </span>
+          </div>
           <Button
-            className="w-64"
-            onClick={() => navigate("/create-user")}
-            variant="default"
+            variant="ghost"
+            size="sm"
+            className="group"
+            onClick={() => navigate(-1)}
           >
-            Create User
+            <ChevronLeft className="mr-1 h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
+            Back
           </Button>
+        </div>
+      </header>
 
-          <Button
-            className="w-64 bg-green-600 hover:bg-green-700"
-            onClick={() => navigate("/call-verification")}
-          >
-            Call Verification
-          </Button>
+      {/* Main content */}
+      <main className="mx-auto max-w-5xl p-4 md:p-8">
+        <Card className="shadow-md border-border/70">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl font-bold">
+              Verification Actions
+            </CardTitle>
+            <CardDescription className="text-muted-foreground">
+              Perform key verification steps and test 3-D Secure authentication.
+            </CardDescription>
+          </CardHeader>
 
-          <Button
-            className="w-64 bg-purple-600 hover:bg-purple-700"
-            onClick={() => navigate("/sales-verification")}
-          >
-            Sales Verification
-          </Button>
+          <CardContent className="space-y-6">
+            {/* Primary Actions */}
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Button
+                variant="default"
+                className="h-11 justify-start gap-2"
+                onClick={() => navigate("/create-user")}
+              >
+                <Plus className="h-4 w-4" />
+                Create User
+              </Button>
 
-          <Separator className="my-4" />
+              <Button
+                variant="secondary"
+                className="h-11 justify-start gap-2"
+                onClick={() => navigate("/call-verification")}
+              >
+                <Phone className="h-4 w-4" />
+                Call Verification
+              </Button>
 
-          {/* 3DS inline */}
-          <ThreeDSButton onResult={setMessage} />
-
-          {message && (
-            <div className="mt-4 w-full p-3 rounded-lg border bg-gray-50 text-sm text-gray-700 shadow-sm">
-              {message}
+              <Button
+                variant="outline"
+                className="h-11 justify-start gap-2 sm:col-span-2"
+                onClick={() => navigate("/sales-verification")}
+              >
+                <BadgeCheck className="h-4 w-4" />
+                Sales Verification
+              </Button>
             </div>
-          )}
-        </CardContent>
-      </Card>
+
+            <Separator className="my-2" />
+
+            {/* Single 3DS Button */}
+            <section className="space-y-3">
+              <Alert className="border-primary/30 bg-primary/5">
+                <ShieldCheck className="h-4 w-4 text-primary" />
+                <AlertTitle className="text-primary font-medium">3-DS</AlertTitle>
+                <AlertDescription>Secure Payment</AlertDescription>
+              </Alert>
+
+              <Button
+                variant="outline"
+                size="lg"
+                className="flex items-center gap-2"
+                onClick={() => navigate("/3ds")}
+              >
+                <Lock className="h-4 w-4" />
+                Proceed to 3DS
+              </Button>
+            </section>
+          </CardContent>
+
+          <CardFooter className="flex flex-col md:flex-row items-center justify-between border-t bg-muted/20 gap-3 py-3 px-4">
+            <p className="text-xs text-muted-foreground">Need help?</p>
+            <div className="flex gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate("/logs")}
+              >
+                <FileText className="mr-1 h-4 w-4" />
+                View Logs
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate("/settings")}
+              >
+                <Settings className="mr-1 h-4 w-4" />
+                Settings
+              </Button>
+            </div>
+          </CardFooter>
+        </Card>
+      </main>
     </div>
   );
 }

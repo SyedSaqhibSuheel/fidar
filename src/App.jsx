@@ -10,7 +10,7 @@ import CallVerificationPage from "./demo/CallVerification";
 import SalesVerificationPage from "./demo/SalesVerification";
 import ATMDashboard from "./components/ATM-Dashboard";
 import AtmQrPage from "./components/Atm-qrpage";
-
+import ThreeDS from "./demo/3ds";
 
 function App() {
 
@@ -26,8 +26,9 @@ function App() {
          <Route path="/atm-dashboard" element={<ATMDashboard />} />
          <Route path="/demo" element={<ActionsPage/>} />
          <Route path="/create-user" element={<CreateUserPage />} />
-          <Route path="/call-verification" element={<CallVerificationPage />} />
-           <Route path="/sales-verification" element={<SalesVerificationPage />} />
+         <Route path="/call-verification" element={<CallVerificationPage />} />
+         <Route path="/sales-verification" element={<SalesVerificationPage />} />
+         <Route path="/3ds" element={<ThreeDS/>} />
 
 
         
