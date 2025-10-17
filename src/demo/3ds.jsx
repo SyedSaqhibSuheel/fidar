@@ -17,6 +17,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { AtmHeader } from "@/components/ATM-Dashboard";
 
 export default function OrderSummaryPage() {
   const [showPopup, setShowPopup] = useState(false);
@@ -24,27 +25,9 @@ export default function OrderSummaryPage() {
   return (
     <div className="min-h-screen flex flex-col bg-muted/30">
       {/* ✅ Compact White Header */}
-      <CardHeader className="p-2 bg-white border-b border-gray-300 shadow-sm">
-        <div className="relative flex items-center justify-between px-4">
-          {/* Left side - Cart + Title */}
-          <div className="flex items-center gap-2 text-gray-900">
-            <ShoppingCart className="h-5 w-5 text-blue-600" />
-            <CardTitle className="text-base sm:text-lg font-semibold">
-              Smart Bank 3DS
-            </CardTitle>
-          </div>
-
-          {/* Right side - Secure Session */}
-          <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
-            <ShieldCheck className="h-4 w-4 text-green-500" />
-            <span>Secure Session</span>
-          </div>
-        </div>
-
-        <CardDescription className="text-gray-500 mt-1 text-xs sm:text-sm px-4">
-          Review your purchase securely.
-        </CardDescription>
-      </CardHeader>
+      <header className="sticky top-0 z-20 w-full border-b bg-white/80 backdrop-blur-md">
+        <AtmHeader />
+      </header>
 
       {/* ✅ Page Content */}
       <main className="flex-1 flex items-center justify-center p-8">

@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Landmark, ShieldCheck, Circle, CreditCard, Receipt, Info, CheckCircle2, Eye, EyeOff } from "lucide-react";
+import logo from "@/assets/banklogo.jpg";
 
 // Constants
 const ATM_COLORS = {
@@ -131,30 +132,26 @@ async function pollApproval({ sessionId, intervalMs = 2000, timeoutMs = 300000, 
 }
 
 // Sub-Components
-function AtmHeader() {
+export function AtmHeader() {
   return (
     <CardHeader className={`p-0 ${ATM_COLORS.bezel}`}>
       <div className="relative p-4 sm:p-5">
-        <div className="absolute inset-0 pointer-events-none opacity-60 mix-blend-normal bg-gradient-to-b from-white/60 to-transparent" />
-        <div className="absolute left-3 top-3 w-2 h-2 rounded-full bg-zinc-300 shadow-inner" />
-        <div className="absolute right-3 top-3 w-2 h-2 rounded-full bg-zinc-300 shadow-inner" />
+        <div className="pointer-events-none absolute inset-0 opacity-60 mix-blend-normal bg-gradient-to-b from-white/60 to-transparent" />
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-zinc-900">
-            <Landmark className="h-5 w-5 text-emerald-600" />
+            <img
+              src={logo}
+              alt="Smart Bank Logo"
+              className="h-10 w-auto rounded-sm"
+              loading="eager"
+              decoding="async"
+            />
             <CardTitle className="text-base sm:text-lg">Smart Bank ATM</CardTitle>
           </div>
-          <div className="flex items-center gap-2 text-xs sm:text-sm text-zinc-600">
-            <ShieldCheck className="h-4 w-4 text-emerald-600" />
-            <span>Secure Session</span>
-          </div>
         </div>
-        <CardDescription className="text-zinc-500 mt-1 text-xs sm:text-sm">
-          Use side buttons to select options.
-        </CardDescription>
       </div>
       <div className={`border-b border-zinc-300 ${ATM_COLORS.bezelAccent}`} />
     </CardHeader>
-
   );
 }
 

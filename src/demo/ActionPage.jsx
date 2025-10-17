@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { AtmHeader } from "@/components/ATM-Dashboard";
 
 export default function ActionsPage() {
   const navigate = useNavigate();
@@ -29,23 +30,7 @@ export default function ActionsPage() {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
       {/* Top bar */}
       <header className="sticky top-0 z-20 w-full border-b bg-white/80 backdrop-blur-md">
-        <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="h-5 w-5 text-primary" />
-            <span className="font-semibold text-sm tracking-tight">
-              Verification Console
-            </span>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="group"
-            onClick={() => navigate(-1)}
-          >
-            <ChevronLeft className="mr-1 h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
-            Back
-          </Button>
-        </div>
+        <AtmHeader />
       </header>
 
       {/* Main content */}
