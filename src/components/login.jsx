@@ -27,12 +27,11 @@ import ModeToggle from "@/components/theme-provider/mode-toggle";
 function Login() {
   const [customerId, setCustomerId] = useState("");
   const [loading, setLoading] = useState(false);
-
   const [atmId, setAtmId] = useState("");
   const [atmLoading, setAtmLoading] = useState(false);
-
   const navigate = useNavigate();
 
+  // 🔹 Handle QR Bind for Bank
   const handleLogin = async () => {
     if (!customerId.trim()) return;
     setLoading(true);
@@ -66,15 +65,17 @@ function Login() {
     }
   };
 
+  // 🔹 Handle Enter key for Bank Bind
   const handleKeyPress = (e) => {
     if (e.key === "Enter") handleLogin();
   };
 
+  // 🔹 Handle QR Bind for ATM
   const handleAtmSubmit = async () => {
     if (!atmId.trim()) return;
     setAtmLoading(true);
     try {
-      console.log("ATMID", atmId)
+      console.log("ATMID", atmId);
       const response = await fetch(
         "http://localhost:8080/iam/api/qr/start?includePng=false",
         {
@@ -85,8 +86,9 @@ function Login() {
       );
       if (!response.ok) throw new Error("Failed to login");
       const data = await response.json();
-      console.log("DATA", data)
+      console.log("DATA", data);
       navigate("/atm-qr", { state: { data } });
+
       toast({
         title: "ATM access granted",
         description: "Redirecting you to QR page...",
@@ -105,8 +107,45 @@ function Login() {
     }
   };
 
+  // 🔹 Handle Enter key for ATM Bind
   const handleAtmKeyPress = (e) => {
     if (e.key === "Enter") handleAtmSubmit();
+  };
+
+  // 🔹 Handle Username Login (new button)
+  const handleUsernameLogin = async () => {
+    if (!customerId.trim()) return;
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `http://localhost:8080/iam/accounts/username?customer_id=${customerId}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      if (!response.ok) throw new Error("Invalid Customer ID or server error");
+      const data = await response.json();
+      console.log("Login success:", data);
+
+      toast({
+        title: "Login successful",
+        description: "Redirecting to Keycloak...",
+        duration: 3000,
+      });
+
+      navigate("/keycloak", { state: data });
+    } catch (error) {
+      console.error("Login Error:", error);
+      toast({
+        variant: "destructive",
+        title: "Login failed",
+        description: "Please check your Customer ID and try again.",
+        duration: 3000,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -125,7 +164,7 @@ function Login() {
         </div>
       </div>
 
-      {/* Split layout with centered divider */}
+      {/* Split layout */}
       <div
         className="
           relative w-full max-w-6xl
@@ -137,8 +176,7 @@ function Login() {
           before:w-[2px] before:bg-zinc-400/70 dark:before:bg-zinc-600/80 before:shadow-sm
         "
       >
-
-        {/* LEFT HALF */}
+        {/* LEFT HALF - Bank Login */}
         <div
           className="
             basis-1/2 flex items-center justify-center
@@ -230,44 +268,59 @@ function Login() {
                 </TooltipProvider>
               </div>
 
+              {/* 🔹 New LOGIN button (to /keycloak) */}
               <Button
                 className="w-full h-11 text-[1rem] sm:h-10 sm:text-sm 
-             bg-gradient-to-r from-pink-900 via-purple-900 to-blue-900 
-             hover:from-pink-800 hover:via-purple-800 hover:to-blue-800 
-             text-white font-semibold shadow-xl transition-all duration-300 
-             hover:shadow-[0_0_20px_rgba(88,28,135,0.6)] 
-             hover:scale-[1.02] active:scale-95 rounded-lg"
+                  bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-700 
+                  hover:from-blue-600 hover:via-indigo-600 hover:to-purple-600 
+                  text-white font-semibold shadow-lg transition-all duration-300 
+                  hover:shadow-[0_0_18px_rgba(79,70,229,0.5)] 
+                  hover:scale-[1.02] active:scale-95 rounded-lg"
+                disabled={!customerId.trim() || loading}
+                onClick={handleUsernameLogin}
+                aria-label="Login to Keycloak"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Logging in...
+                  </>
+                ) : (
+                  "Login"
+                )}
+              </Button>
+
+              {/* Existing Bind Button */}
+              <Button
+                className="w-full h-11 text-[1rem] sm:h-10 sm:text-sm 
+                  bg-gradient-to-r from-pink-900 via-purple-900 to-blue-900 
+                  hover:from-pink-800 hover:via-purple-800 hover:to-blue-800 
+                  text-white font-semibold shadow-xl transition-all duration-300 
+                  hover:shadow-[0_0_20px_rgba(88,28,135,0.6)] 
+                  hover:scale-[1.02] active:scale-95 rounded-lg"
                 disabled={!customerId.trim() || loading}
                 onClick={handleLogin}
                 aria-label="Login to your account"
               >
                 {loading ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Logging
-                    in...
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Binding...
                   </>
                 ) : (
-                  "Login"
+                  "Bind"
                 )}
               </Button>
             </CardContent>
 
-            <Separator className="mx-4 sm:mx-6" />
+            <Separator />
 
             <CardFooter className="flex flex-col space-y-4 text-center px-4 sm:px-6 py-5">
               <p className="text-[0.9rem] sm:text-xs md:text-sm text-muted-foreground max-w-[36ch] sm:max-w-md mx-auto leading-relaxed">
                 By proceeding, you agree to our{" "}
-                <a
-                  href="#"
-                  className="underline hover:text-primary focus:text-primary"
-                >
+                <a href="#" className="underline hover:text-primary focus:text-primary">
                   Privacy Policy
                 </a>{" "}
                 and{" "}
-                <a
-                  href="#"
-                  className="underline hover:text-primary focus:text-primary"
-                >
+                <a href="#" className="underline hover:text-primary focus:text-primary">
                   Terms & Conditions
                 </a>
               </p>
@@ -287,7 +340,7 @@ function Login() {
           </Card>
         </div>
 
-        {/* RIGHT HALF with themed background */}
+        {/* RIGHT HALF - ATM Login */}
         <div
           className="
             basis-1/2 flex items-center justify-center
@@ -370,38 +423,54 @@ function Login() {
                       align="start"
                       className="max-w-xs text-xs sm:text-sm"
                     >
-                      <p id="atm-id-info">
-                        ATM identifier allocated by Smart Bank.
-                      </p>
+                      <p id="atm-id-info">ATM identifier allocated by Smart Bank.</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               </div>
-<Button
-  className="w-full h-11 text-[1rem] sm:h-10 sm:text-sm 
-             bg-gradient-to-r from-pink-900 via-purple-900 to-blue-900 
-             hover:from-pink-800 hover:via-purple-800 hover:to-blue-800 
-             text-white font-semibold shadow-xl transition-all duration-300 
-             hover:shadow-[0_0_20px_rgba(88,28,135,0.6)] 
-             hover:scale-[1.02] active:scale-95 rounded-lg"
-  disabled={!atmId.trim() || atmLoading}
-  onClick={handleAtmSubmit}
-  aria-label="Login to ATM dashboard"
->
-  {atmLoading ? (
-    <>
-      <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Opening...
-    </>
-  ) : (
-    "Login to ATM Dashboard"
-  )}
-</Button>
 
+               <Button
+                className="w-full h-11 text-[1rem] sm:h-10 sm:text-sm 
+                  bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-700 
+                  hover:from-blue-600 hover:via-indigo-600 hover:to-purple-600 
+                  text-white font-semibold shadow-lg transition-all duration-300 
+                  hover:shadow-[0_0_18px_rgba(79,70,229,0.5)] 
+                  hover:scale-[1.02] active:scale-95 rounded-lg"
+                disabled={!customerId.trim() || loading}
+                onClick={handleUsernameLogin}
+                aria-label="Login to Keycloak"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Logging in...
+                  </>
+                ) : (
+                  "Login"
+                )}
+              </Button>
 
-
+              <Button
+                className="w-full h-11 text-[1rem] sm:h-10 sm:text-sm 
+                  bg-gradient-to-r from-pink-900 via-purple-900 to-blue-900 
+                  hover:from-pink-800 hover:via-purple-800 hover:to-blue-800 
+                  text-white font-semibold shadow-xl transition-all duration-300 
+                  hover:shadow-[0_0_20px_rgba(88,28,135,0.6)] 
+                  hover:scale-[1.02] active:scale-95 rounded-lg"
+                disabled={!atmId.trim() || atmLoading}
+                onClick={handleAtmSubmit}
+                aria-label="Login to ATM dashboard"
+              >
+                {atmLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Opening...
+                  </>
+                ) : (
+                  "Bind"
+                )}
+              </Button>
             </CardContent>
 
-            <Separator className="mx-4 sm:mx-6" />
+            <Separator />
 
             <CardFooter className="flex flex-col space-y-4 text-center px-4 sm:px-6 py-5">
               <p className="text-[0.9rem] sm:text-xs md:text-sm text-muted-foreground max-w-[36ch] sm:max-w-md mx-auto leading-relaxed">

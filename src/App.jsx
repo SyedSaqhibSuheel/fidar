@@ -11,6 +11,8 @@ import SalesVerificationPage from "./demo/SalesVerification";
 import ATMDashboard from "./components/ATM-Dashboard";
 import AtmQrPage from "./components/Atm-qrpage";
 import ThreeDS from "./demo/3ds";
+import KeycloakLogin from "./components/KeyclockLogin";
+
 
 function App() {
 
@@ -29,6 +31,7 @@ function App() {
          <Route path="/call-verification" element={<CallVerificationPage />} />
          <Route path="/sales-verification" element={<SalesVerificationPage />} />
          <Route path="/3ds" element={<ThreeDS/>} />
+         <Route path="/keycloak" element={<KeycloakLogin/> } />
 
 
         
